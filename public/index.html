@@ -8,8 +8,15 @@
     <link rel="stylesheet" type="text/css" href="/css/index.css">
 </head>
 <body>
-    <h1>Welcome to chat app</h1>
+    <p>Welcome to chat app</p>
+    <ol id="messages"></ol>
+    <form id="message-form">
+        <input name="message" type="text" placeholder="Message"/>
+        <button type="submit">Send</button>
+    </form>
+
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/lib/jquery-3.2.1.min.js"></script>
     <script src="/js/index.js"></script>
 </body>
 </html>
