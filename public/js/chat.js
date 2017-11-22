@@ -100,7 +100,6 @@ $('#message-form').on('submit',function(e){
 
     socket.emit('createMessage',{
         from:name,
-        room,
         text:messageTextBox.val()
     },function(){
         messageTextBox.val('');
@@ -118,8 +117,7 @@ locationButton.on('click',function(e){
         locationButton.removeAttr('disabled').text('Send Location');
         socket.emit('createLocationMessage',{
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            room
+            longitude: position.coords.longitude
         });
     },function(){
         locationButton.removeAttr('disabled').text('Send Location');
