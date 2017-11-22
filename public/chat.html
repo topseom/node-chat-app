@@ -44,11 +44,13 @@
                         <span>{{createAt}}</span>
                 </div>
                 <div class="message__body">
-                        <p>
+                        <!--<p>
                            <a href="{{url}}" target="_blank">My current location</a>
-                        </p>
+                        </p>-->
+                        <div id="{{classMap}}" class="map"></div>
                 </div>
         </li>
+        <script async defer src="/js/lib/googlemap.js"></script>
    </script>
     
     

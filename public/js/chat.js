@@ -4,6 +4,23 @@ var param = $.deparam(window.location.search);
 var name = param['name'] || 'User';
 var room = param['room'];
 
+var lat = -25.363;
+var lng =  131.044;
+var classMap = 'map';
+
+function initMap() {
+    console.log(lat,lng,classMap);
+    var uluru = {lat: lat, lng: lng};
+    var map = new google.maps.Map(document.getElementById(classMap), {
+      zoom: 16,
+      center: uluru
+    });
+    var marker = new google.maps.Marker({
+      position: uluru,
+      map: map
+    });
+}
+
 function scrollToBottom(){
     //Selectors
     var messages = $('#messages');
@@ -15,8 +32,12 @@ function scrollToBottom(){
     var scrollHeight = messages.prop('scrollHeight');
     var newMessageHeight = newMessage.innerHeight();
     var lastMessageHeight = newMessage.prev().innerHeight();
+
+    var map = $('.map');
     
     if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight  >= scrollHeight){
+        messages.scrollTop(scrollHeight);
+    }else if(map.length && scrollHeight <= clientHeight+scrollTop){
         messages.scrollTop(scrollHeight);
     }
 }
@@ -67,11 +88,16 @@ socket.on('newMessage',function(message){
 });
 
 socket.on('newLocationMessage',function(message){
+    lat = message.lat;
+    lng = message.lng;
+    classMap = message.classMap;
+
     var formattedTime = moment(message.createdAt).format('h:mm a');
     var template = $('#location-message-template').html();
     var html = Mustache.render(template,{
         from: message.from,
         url: message.url,
+        classMap: message.classMap,
         createAt: formattedTime
     });
     
