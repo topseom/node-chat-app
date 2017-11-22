@@ -1,5 +1,9 @@
 var socket = io();
 
+var param = $.deparam(window.location.search);
+var name = param['name'] || 'User';
+var room = param['room'];
+
 function scrollToBottom(){
     //Selectors
     var messages = $('#messages');
@@ -19,6 +23,27 @@ function scrollToBottom(){
 
 socket.on('connect', function(){
     console.log('Connected to server');
+    socket.emit('join',param,function(err){
+        if(err){
+            alert(err);
+            window.location.href = '/';
+        }else{
+            console.log("No error");
+        }
+    })
+});
+
+socket.on('updateUserList',function(users){
+    console.log("Users List",users);
+    var ol = $('<o style="list-style-type:decimal"></o>');
+    users.forEach(user=>{
+        if(user != name){
+            var li = $('<li></li>');
+            li.text(user);
+            ol.append(li);
+        }
+    });
+    $('#users').html(ol);
 });
 
 socket.on('disconnect',function(){
@@ -74,7 +99,8 @@ $('#message-form').on('submit',function(e){
     var messageTextBox = $('[name=message]');
 
     socket.emit('createMessage',{
-        from:'User',
+        from:name,
+        room,
         text:messageTextBox.val()
     },function(){
         messageTextBox.val('');
@@ -92,7 +118,8 @@ locationButton.on('click',function(e){
         locationButton.removeAttr('disabled').text('Send Location');
         socket.emit('createLocationMessage',{
             latitude: position.coords.latitude,
-            longitude: position.coords.longitude
+            longitude: position.coords.longitude,
+            room
         });
     },function(){
         locationButton.removeAttr('disabled').text('Send Location');
