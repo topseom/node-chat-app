@@ -1,8 +1,11 @@
 var socket = io();
 
+var locationButton = $('#send-location');
 var param = $.deparam(window.location.search);
+param['room'] = param['room'].toLowerCase();
 var name = param['name'] || 'User';
 var room = param['room'];
+
 
 var lat = -25.363;
 var lng =  131.044;
@@ -33,13 +36,15 @@ function scrollToBottom(){
     var newMessageHeight = newMessage.innerHeight();
     var lastMessageHeight = newMessage.prev().innerHeight();
 
-    var map = $('.map');
+    messages.scrollTop(scrollHeight);
+
+    /*var map = $('.map');
     
     if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight  >= scrollHeight){
         messages.scrollTop(scrollHeight);
     }else if(map.length && scrollHeight <= clientHeight+scrollTop){
         messages.scrollTop(scrollHeight);
-    }
+    }*/
 }
 
 socket.on('connect', function(){
@@ -100,7 +105,9 @@ socket.on('newLocationMessage',function(message){
         classMap: message.classMap,
         createAt: formattedTime
     });
-    
+    setTimeout(function(){
+        locationButton.removeAttr('disabled').text('Send Location');
+    },500);
     $('#messages').append(html);
     scrollToBottom();
     // var li = $('<li></li>');
@@ -132,7 +139,7 @@ $('#message-form').on('submit',function(e){
     });
 });
 
-var locationButton = $('#send-location');
+
 locationButton.on('click',function(e){
     if(!navigator.geolocation){
         return alert('Geolocation not support by your browser');
@@ -140,7 +147,6 @@ locationButton.on('click',function(e){
     locationButton.attr('disabled','disabled').text('Sending location...');
 
     navigator.geolocation.getCurrentPosition(function(position){
-        locationButton.removeAttr('disabled').text('Send Location');
         socket.emit('createLocationMessage',{
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
